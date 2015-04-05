@@ -1,0 +1,49 @@
+{{template "admin/header" .}}
+<div class="main-container container-fluid">
+    <!-- Page Container -->
+    <div class="page-container">
+        <!-- Page Sidebar -->
+        <div class="page-sidebar" id="sidebar">
+            <!-- Page Sidebar Header-->
+            <div class="sidebar-header-wrapper">
+                <input type="text" class="searchinput"/>
+                <i class="searchicon fa fa-search"></i>
+
+                <div class="searchhelper">搜索菜单</div>
+            </div>
+            <ul class="nav sidebar-menu">
+                <li class="active">
+                    <a href="javascript:void(0)" onclick="loadHtml('/admin/helpmanager','.page-body')">
+                        <i class="menu-icon glyphicon glyphicon-tasks"></i>
+                        <span class="menu-text">资料编辑 </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="page-content">
+            <!-- Page Breadcrumb -->
+            <div class="page-breadcrumbs">
+                <ul class="breadcrumb">
+                    <li>
+                        <i class="fa fa-home"></i>
+                        <a href="#">首页</a>
+                    </li>
+                    <li class="active">资料编辑</li>
+                </ul>
+            </div>
+            {{template "admin/js"}}
+            <div class="page-body">
+
+
+            </div>
+            <!-- /Page Body -->
+        </div>
+        <!-- /Page Content -->
+    </div>
+    <!-- /Page Container -->
+    <!-- Main Container -->
+
+</div>
+
+
+{{template "admin/footer"}}
