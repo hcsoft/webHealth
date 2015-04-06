@@ -7,77 +7,142 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
-.run(function($ionicPlatform) {
-  $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-    }
-    if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      StatusBar.styleLightContent();
-    }
-  });
-})
+    .run(function ($ionicPlatform, $rootScope, $state, auth) {
+        $ionicPlatform.ready(function () {
+            // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+            // for form inputs)
+            if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+                cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+            }
+            if (window.StatusBar) {
+                // org.apache.cordova.statusbar required
+                StatusBar.styleLightContent();
+            }
+        });
 
-.config(function($stateProvider, $urlRouterProvider) {
-
-  // Ionic uses AngularUI Router which uses the concept of states
-  // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
-  // Each state's controller can be found in controllers.js
-  $stateProvider
-
-  // setup an abstract state for the tabs directive
-    .state('tab', {
-    url: "/tab",
-    abstract: true,
-    templateUrl: "templates/tabs.html"
-  })
-
-  // Each tab has its own nav history stack:
-
-  .state('tab.dash', {
-    url: '/dash',
-    views: {
-      'tab-dash': {
-        templateUrl: 'templates/tab-dash.html',
-        controller: 'DashCtrl'
-      }
-    }
-  })
-
-  .state('tab.chats', {
-      url: '/chats',
-      views: {
-        'tab-chats': {
-          templateUrl: 'templates/tab-chats.html',
-          controller: 'ChatsCtrl'
-        }
-      }
-    })
-    .state('tab.chat-detail', {
-      url: '/chats/:chatId',
-      views: {
-        'tab-chats': {
-          templateUrl: 'templates/chat-detail.html',
-          controller: 'ChatDetailCtrl'
-        }
-      }
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
+            var requireLogin = toState.data.requireLogin;
+            console.log(toState);
+            if (requireLogin && typeof $rootScope.currentUser === 'undefined') {
+                event.preventDefault();
+                return $state.go('login');
+            }
+        });
     })
 
-  .state('tab.account', {
-    url: '/account',
-    views: {
-      'tab-account': {
-        templateUrl: 'templates/tab-account.html',
-        controller: 'AccountCtrl'
-      }
-    }
-  });
+    .config(function ($stateProvider, $urlRouterProvider, $httpProvider) {
 
-  // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+        $httpProvider.interceptors.push(function ($timeout, $q, $injector) {
+            var auth, $http, $state;
+            // this trick must be done so that we don't receive
+            // `Uncaught Error: [$injector:cdep] Circular dependency found`
+            $timeout(function () {
+                auth = $injector.get('auth');
+                $http = $injector.get('$http');
+                $state = $injector.get('$state');
+            });
 
-});
+            return {
+                response: function (rejection) {
+                    var deferred = $q.defer();
+                    if (rejection.status == 200) {
+                        if(rejection.data.Type == "login" && rejection.data.Status ==401 && rejection.config.url!= "http://localhost:3000/login?callback=JSON_CALLBACK"){
+                            auth.logindlg()
+                                .then(function () {
+                                    deferred.resolve();
+                                    $state.go(toState.name, toParams);
+                                }).catch(function () {
+                                    deferred.reject(rejection);
+                                    $state.go('login');
+                                });
+                        }else{
+                            deferred.resolve(rejection);
+                        }
+                    }else{
+                        deferred.resolve(rejection);
+                    }
+                    return deferred.promise;
+                }
+            };
+        });
+        // Ionic uses AngularUI Router which uses the concept of states
+        // Learn more here: https://github.com/angular-ui/ui-router
+        // Set up the various states which the app can be in.
+        // Each state's controller can be found in controllers.js
+        $stateProvider
+            // setup an abstract state for the tabs directive
+            .state('login', {
+                url: "/login",
+                //abstract: true,
+                templateUrl: "tpl/login.html",
+                controller: 'LoginCtrl',
+                data: {
+                    requireLogin: false
+                }
+            })
+            .state('tab', {
+                url: "/tab",
+                abstract: true,
+                templateUrl: "tpl/tabs.html",
+                data: {
+                    requireLogin: false
+                }
+            })
+
+            // Each tab has its own nav history stack:
+
+            .state('tab.dash', {
+                url: '/dash',
+                views: {
+                    'tab-dash': {
+                        templateUrl: 'tpl/tab-dash.html',
+                        controller: 'DashCtrl'
+                    }
+                },
+                data: {
+                    requireLogin: true
+                }
+            })
+
+            .state('tab.chats', {
+                url: '/chats',
+                views: {
+                    'tab-chats': {
+                        templateUrl: 'tpl/tab-chats.html',
+                        controller: 'ChatsCtrl'
+                    }
+                },
+                data: {
+                    requireLogin: true
+                }
+            })
+            .state('tab.chat-detail', {
+                url: '/chats/:chatId',
+                views: {
+                    'tab-chats': {
+                        templateUrl: 'tpl/chat-detail.html',
+                        controller: 'ChatDetailCtrl'
+                    }
+                },
+                data: {
+                    requireLogin: true
+                }
+            })
+
+            .state('tab.account', {
+                url: '/account',
+                views: {
+                    'tab-account': {
+                        templateUrl: 'tpl/tab-account.html',
+                        controller: 'AccountCtrl'
+                    }
+                },
+                data: {
+                    requireLogin: true
+                }
+            });
+
+        // if none of the above states are matched, use this as the fallback
+        $urlRouterProvider.otherwise('/login');
+
+    });

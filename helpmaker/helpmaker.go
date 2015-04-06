@@ -6,8 +6,8 @@ import (
 	"github.com/martini-contrib/render"
 	"fmt"
 	"strings"
-	dbutil "github.com/hcsoft/helpsystem/db"
-	erutil "github.com/hcsoft/helpsystem/error"
+	"github.com/hcsoft/webHealth/dbutil"
+	"github.com/hcsoft/webHealth/erutil"
 )
 
 func Cats( db *sql.DB , r render.Render, params martini.Params) {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="com.ionicframework.mobile253203" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>mobile</name>
+  <name>恒辰公卫</name>
   <description>
-        An Ionic Framework and Cordova project.
+    恒辰公共卫生服务平台手机版
     </description>
-  <author email="hi@ionicframework" href="http://ionicframework.com/">
-      Ionic Framework Team
+  <author email="hengcsoft@163.com" href="www.hcsoft.cn">
+      hcsoft
     </author>
   <content src="index.html"/>
   <access origin="*"/>

@@ -1,20 +1,47 @@
-package  db
+package  dbutil
 
 import(
 	"database/sql"
 	cn "golang.org/x/text/encoding/simplifiedchinese"
-//	"golang.org/x/text/encoding/unicode"
+	"github.com/larspensjo/config"
 	"golang.org/x/text/transform"
+	"github.com/hcsoft/webHealth/erutil"
 	"io/ioutil"
 	"bytes"
-//	"fmt"
+	"fmt"
 )
 
-func GetDB(){
+func GetDB(inicfg config.Config) *sql.DB{
+	dbtype ,_:= inicfg.String("db","dbtype")
+	maxConns,_ := inicfg.Int("db","maxconns")
+	if dbtype == "odbc"{
+		dsn,_ :=inicfg.String(dbtype,"DSN")
+		dbname,_ :=inicfg.String(dbtype,"DATABASE")
+		uid,_ :=inicfg.String(dbtype,"UID")
+		pwd,_ :=inicfg.String(dbtype,"PWD")
+		connectionString := fmt.Sprintf("DSN=%s;DATABASE=%s;UID=%s;PWD=%s",dsn,dbname,uid,pwd)
+		fmt.Println(connectionString)
+		db,err := sql.Open(dbtype,connectionString)
+		erutil.CheckErr(err)
+		db.SetMaxOpenConns(maxConns)
+		return db
+	}else if dbtype == "adodb"{
+		provider,_ :=inicfg.String(dbtype,"Provider")
+		datatype,_ :=inicfg.String(dbtype,"DataTypeCompatibility")
+		server,_ :=inicfg.String(dbtype,"Server")
+		dbname,_ :=inicfg.String(dbtype,"DATABASE")
+		uid,_ :=inicfg.String(dbtype,"UID")
+		pwd,_ :=inicfg.String(dbtype,"PWD")
 
-	//ado sql.Open("adodb", "Provider=SQLNCLI11;DataTypeCompatibility=80;Server=127.0.0.1;UID=sa;PWD=11111111;Database=helpsystem;")
-
-	//odbc sql.Open("odbc","DSN=mssql;DATABASE=helpsystem;UID=sa;PWD=11111111")
+		connectionString := fmt.Sprintf("Provider=%s;DataTypeCompatibility=%s;Server=%s;UID=%s;PWD=%s;Database=%s;",provider,datatype,server,uid,pwd,dbname)
+		fmt.Println(connectionString)
+		db,err := sql.Open(dbtype,connectionString)
+		erutil.CheckErr(err)
+		db.SetMaxOpenConns(maxConns)
+		return db
+	}else{
+		panic( ("数据库配置[db]下的dbtype配置类型错误,类型只能为odbc或adodb"))
+	}
 }
 
 /*获得数据库的map类型的array*/

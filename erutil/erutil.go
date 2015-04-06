@@ -1,4 +1,4 @@
-package error
+package erutil
 
 
 func CheckErr(err error) {

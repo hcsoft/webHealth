@@ -1,9 +1,13 @@
-<ion-view view-title="Account">
+<ion-view view-title="帐号">
   <ion-content>
     <ion-list>
     <ion-toggle  ng-model="settings.enableFriends">
         Enable Friends
     </ion-toggle>
     </ion-list>
+    <div class="bar bar-footer bar-balanced">
+      <div class="title"><button ng-click="logout()">登出</button></div>
+    </div>
   </ion-content>
+
 </ion-view>
