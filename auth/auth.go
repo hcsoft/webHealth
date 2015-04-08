@@ -7,8 +7,8 @@ import ("database/sql"
 	"net/http"
 	"fmt"
 	"github.com/hcsoft/webHealth/dbutil"
-	"github.com/hcsoft/webHealth/erutil"
-	"encoding/json"
+	"github.com/hcsoft/webHealth/util"
+
 )
 
 type JsonRet struct {
@@ -17,42 +17,32 @@ type JsonRet struct {
 	Msg  string
 	Data interface{}
 }
-func jsonp(obj interface{},callback string)string{
-	b,_:=json.Marshal(obj)
-	return callback+"("+string(b)+")"
-}
+
 func Login(session sessions.Session, db *sql.DB, r render.Render, req *http.Request ,writer http.ResponseWriter) string {
 	writer.Header().Set("Content-Type", "text/javascript")
 	userid := req.FormValue("userid")
 	callback := req.FormValue("callback")
-	fmt.Println("userid==" + userid)
-	fmt.Println("callback==" + callback)
 	password := req.FormValue("password")
-	fmt.Println("password==" + password)
 	if userid == "" {
-//		r.JSON(401, JsonRet{false,"请登录", "abc"})
-		return jsonp(JsonRet{"login",401,"请登录", "abc"},callback)
+		return util.Jsonp(JsonRet{"login",401,"请登录", "abc"},callback)
 	} else {
 		rows, err := db.Query("select * from sam_taxempcode where loginname= ? ", userid)
-		erutil.CheckErr(err)
+		defer rows.Close()
+		util.CheckErr(err)
 		if rows.Next() {
 			values := dbutil.GetOneResult(rows)
-			fmt.Println(values["password"]);
+			fmt.Println(values);
 			if values["password"] == password {
 				session.Set("userid", values["loginname"])
 				session.Set("username", values["username"])
-//				r.JSON(200, JsonRet{true,"登录成功", values["username"]})
 				fmt.Println("登录成功!")
-				return jsonp( JsonRet{"login",200,"登录成功", values["username"]},callback)
-				//			r.HTML(200, "admin/index", nil)
+				return util.Jsonp( JsonRet{"login",200,"登录成功", values["username"]},callback)
 
 			}else {
-//				r.JSON(404, JsonRet{false,"登录失败!密码错误!", nil})
-				return jsonp( JsonRet{"login",401,"登录失败!密码错误!", nil},callback)
+				return util.Jsonp( JsonRet{"login",401,"登录失败!密码错误!", nil},callback)
 			}
 		}else {
-//			r.JSON(401, JsonRet{false,"登录失败!用户名错误!", nil})
-			return jsonp( JsonRet{"login",401,"登录失败!用户名错误!", nil},callback)
+			return util.Jsonp( JsonRet{"login",401,"登录失败!用户名错误!", nil},callback)
 		}
 	}
 }
@@ -71,3 +61,53 @@ func Auth(session sessions.Session, c martini.Context, r render.Render) {
 	}
 }
 
+func GetDistrictById(id string , cache map[string]interface{}) interface{}{
+	var districts map[string]interface{}
+	districts = cache["district"].(map[string]interface{})
+	count := (len(id)-6) /3
+	root := districts
+	for i := 1 ; i <count ; i++{
+		key := id[:6+i*3]
+		child := root["child"].([]map[string]interface{})
+		idindex := root["idindex"].( map[string]int)
+		root = child[idindex[key]]
+	}
+//	fmt.Println(root);
+	return root
+}
+
+func GetDistrict(db *sql.DB,dist string)map[string]interface{}{
+	root, _ := db.Query("select * from district where id= ? ",dist)
+	defer root.Close()
+	root.Next()
+	rootdata := dbutil.GetOneResult(root)
+	child,idindex := getDistrictChild(db,rootdata["ID"].(string))
+	rootdata["child"] = child
+	rootdata["idindex"] = idindex
+	if len(child)>0{
+		rootdata["haschild"] = true
+	}else{
+		rootdata["haschild"] = false
+	}
+	return rootdata
+}
+
+func getDistrictChild(db *sql.DB,dist string) ([]map[string]interface{} , map[string]int){
+	child, _  := db.Query("select * from district where parentid= ? ",dist)
+	defer child.Close()
+	childdata := dbutil.GetResultArray(child)
+	idindex  := make(map[string]int)
+	for i,v := range childdata{
+		id :=v["ID"].(string)
+		idindex[id] = i
+		child,childidindex := getDistrictChild(db,id)
+		v["child"] = child
+		v["idindex"] = childidindex
+		if len(child)>0{
+			v["haschild"] = true
+		}else{
+			v["haschild"] = false
+		}
+	}
+	return childdata ,idindex
+}

@@ -1,10 +1,22 @@
 <ion-view view-title="系统登录">
     <ion-content class="padding">
-        <span >{{msg}}</span>
-            用户名<input type="text" ng-model="_username" />
-            密码<input type="password" ng-model="_password" />
+        <div class="card" ng-show="msg">
+            <div class="item item-text-wrap" style="color:red">
+                {{msg}}
+            </div>
+        </div>
+        <form ng-submit="login(_username, _password)">
+            <label class="item item-input ">
+                <i class="icon ion-android-person placeholder-icon"></i><input type="text" ng-model="_username" ng-init="_username='admin'"  placeholder="用户名"/>
+            </label>
+            <label class="item item-input ">
+                <i class="icon ion-android-lock placeholder-icon"></i><input type="password" ng-model="_password" ng-init="_password='sdsystem'" placeholder="密码"/>
+            </label>
 
-        <button ng-click="login(_username, _password)">登录</button>
+
+            <button class="button button-full button-positive">登录</button>
+        </form>
+        <button class="button button-full button-positive">退出</button>
     </ion-content>
 </ion-view>
 

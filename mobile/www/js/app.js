@@ -46,7 +46,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
                 response: function (rejection) {
                     var deferred = $q.defer();
                     if (rejection.status == 200) {
-                        if(rejection.data.Type == "login" && rejection.data.Status ==401 && rejection.config.url!= "http://localhost:3000/login?callback=JSON_CALLBACK"){
+                        if(rejection.data && rejection.data.Type == "login" && rejection.data.Status ==401 && rejection.config.url!= window.localStorage['loginurl']){
                             auth.logindlg()
                                 .then(function () {
                                     deferred.resolve();

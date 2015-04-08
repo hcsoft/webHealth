@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
+    <file url="file://$PROJECT_DIR$/mobile/www/css/style.css" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mobile/www/js/app.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mobile/www/js/controllers.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mobile/www/js/services.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mobile/www/tpl/chat-detail.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mobile/www/tpl/login.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mobile/www/tpl/logindialog.html" charset="UTF-8" />
@@ -8,5 +12,6 @@
     <file url="file://$PROJECT_DIR$/mobile/www/tpl/tab-chats.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mobile/www/tpl/tab-dash.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mobile/www/tpl/tabs.html" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

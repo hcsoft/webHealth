@@ -55,9 +55,9 @@ angular.module('starter.services', ['ionic'])
         return {
             login: function (_username, _password) {
                 var deferred = $q.defer();
-                //½øĞĞhttpÇëÇó²éÑ¯½á¹û
+                //è¿›è¡Œhttpè¯·æ±‚æŸ¥è¯¢ç»“æœ
                 console.log(_username, _password);
-                $http.jsonp("http://localhost:3000/login?callback=JSON_CALLBACK",
+                $http.jsonp(window.localStorage['loginurl'],
                     {
                         params: {
                             userid: _username,
@@ -81,7 +81,7 @@ angular.module('starter.services', ['ionic'])
                 var deferred = $q.defer();
                 var child = $rootScope.$new();
                 child.cancel = function () {
-                    //È¡ÏûµÇÂ¼Ê±,É¶Ò²²»¸É
+                    //å–æ¶ˆç™»å½•æ—¶,å•¥ä¹Ÿä¸å¹²
                     this.modal.hide();
                     deferred.reject();
                 };
