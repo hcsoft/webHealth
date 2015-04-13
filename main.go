@@ -48,7 +48,8 @@ func main() {
 	m.Use(martini.Static("static"))
 	//需要权限的内容
 	m.Group("/admin", admin.Router, auth.Auth)
-	m.Run()
+//	m.Run()
+	m.RunOnAddr(":3333")
 }
 
 func index(db *sql.DB, r render.Render, req *http.Request, inicfg *config.Config) {
