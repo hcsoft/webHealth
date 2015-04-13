@@ -8,7 +8,7 @@ import (
 	"github.com/hcsoft/webHealth/auth"
 	"github.com/martini-contrib/render"
 	"github.com/martini-contrib/sessions"
-	_ "github.com/mattn/go-adodb"
+//	_ "github.com/mattn/go-adodb"
 	"net/http"
 	//	erutil "github.com/hcsoft/webHealth/error"
 	"github.com/hcsoft/webHealth/admin"
