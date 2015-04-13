@@ -18,6 +18,7 @@ import (
 func GetDB(inicfg config.Config) *sql.DB {
 	dbtype, _ := inicfg.String("db", "dbtype")
 	maxConns, _ := inicfg.Int("db", "maxconns")
+	maxidles, _ := inicfg.Int("db", "maxidles")
 	if dbtype == "odbc" {
 		dsn, _ := inicfg.String(dbtype, "DSN")
 		dbname, _ := inicfg.String(dbtype, "DATABASE")
@@ -28,6 +29,7 @@ func GetDB(inicfg config.Config) *sql.DB {
 		db, err := sql.Open(dbtype, connectionString)
 		util.CheckErr(err)
 		db.SetMaxOpenConns(maxConns)
+		db.SetMaxIdleConns(maxidles);
 		return db
 	} else if dbtype == "adodb" {
 		provider, _ := inicfg.String(dbtype, "Provider")
@@ -42,6 +44,7 @@ func GetDB(inicfg config.Config) *sql.DB {
 		db, err := sql.Open(dbtype, connectionString)
 		util.CheckErr(err)
 		db.SetMaxOpenConns(maxConns)
+		db.SetMaxIdleConns(maxidles);
 		return db
 	} else {
 		panic(("数据库配置[db]下的dbtype配置类型错误,类型只能为odbc或adodb"))
