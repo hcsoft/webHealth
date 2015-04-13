@@ -2,17 +2,21 @@ package dbutil
 
 import (
 	"database/sql"
-	cn "golang.org/x/text/encoding/simplifiedchinese"
-	//	"golang.org/x/text/encoding/unicode"
-	"bytes"
+//	cn "golang.org/x/text/encoding/simplifiedchinese"
+//	//	"golang.org/x/text/encoding/unicode"
+//	"bytes"
 	"fmt"
 	"github.com/hcsoft/webHealth/util"
 	"github.com/larspensjo/config"
-	"golang.org/x/text/transform"
-	"io/ioutil"
-	//	"unicode/utf16"
-	//	"unicode/utf8"
-	//	"encoding/binary"
+//	"golang.org/x/text/transform"
+//	"io/ioutil"
+//	"unicode/utf16"
+//	"unicode/utf8"
+//	"encoding/binary"
+//	"runtime"
+//	"bufio"
+//	"strings"
+//	"reflect"
 )
 
 func GetDB(inicfg config.Config) *sql.DB {
@@ -70,19 +74,13 @@ func GetResultArrayLimit(rows *sql.Rows, max int) []map[string]interface{} {
 		rows.Scan(valuePtrs...)
 		for i, s := range cols {
 			var v interface{}
-
 			val := values[i]
-
 			b, ok := val.([]byte)
 			if ok {
-				data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader(b), cn.GB18030.NewDecoder()))
-				//					data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader(b), unicode.UTF16(unicode.LittleEndian,unicode.ExpectBOM).NewDecoder()))
-				v = string(data)
-			} else {
-
+				v = string(b)
+			}else{
 				v = val
 			}
-
 			row[s] = v
 		}
 		ret = append(ret, row)
@@ -105,19 +103,13 @@ func GetResultArray(rows *sql.Rows) []map[string]interface{} {
 		rows.Scan(valuePtrs...)
 		for i, s := range cols {
 			var v interface{}
-
 			val := values[i]
-
 			b, ok := val.([]byte)
 			if ok {
-				data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader(b), cn.GB18030.NewDecoder()))
-				//					data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader(b), unicode.UTF16(unicode.LittleEndian,unicode.ExpectBOM).NewDecoder()))
-				v = string(data)
-			} else {
-
+				v = string(b)
+			}else{
 				v = val
 			}
-
 			row[s] = v
 		}
 		ret = append(ret, row)
@@ -139,17 +131,13 @@ func GetOneResult(rows *sql.Rows) map[string]interface{} {
 
 	for i, s := range cols {
 		var v interface{}
-
 		val := values[i]
-
 		b, ok := val.([]byte)
 		if ok {
-			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader(b), cn.GB18030.NewDecoder()))
-			v = string(data)
-		} else {
+			v = string(b)
+		}else{
 			v = val
 		}
-
 		row[s] = v
 	}
 	return row
